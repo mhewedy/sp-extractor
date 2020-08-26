@@ -21,7 +21,12 @@ func main() {
 		log.Fatal(err)
 	}
 
-	_, err = mi.Next()
+	mis, err := mi.Next()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	mis, err = mis[0].Next()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -64,8 +69,9 @@ func parseInput(input string) (MethodInfo, error) {
 	// TODO implement
 
 	return MethodInfo{
-		class:      "VehiclesDelegate",
-		method:     "listTrafficViolationsDetails",
+		class: "VehiclesDelegate",
+		//method:     "listTrafficViolationsDetails",
+		method:     "lookupLimitedVehiclePlateTypes",
 		level:      levelDelegate,
 		argsNumber: 1,
 	}, nil

@@ -136,13 +136,11 @@ func findMethodIndex(contents, method, class string, argsNumber int) ([]int, err
 			method, argsNumber, class)
 	}
 
-	/*
-		fmt.Print("Found: ")
-		for i := methodSigIndex[0]; i < methodSigIndex[1]; i++ {
-			fmt.Print(string(contents[i]))
-		}
-		fmt.Println()
-	*/
+	fmt.Printf("Found: %s.", class)
+	for i := methodSigIndex[0]; i < methodSigIndex[1]; i++ {
+		fmt.Print(string(contents[i]))
+	}
+	fmt.Println()
 
 	return methodSigIndex, nil
 }
@@ -185,18 +183,48 @@ func (m MethodInfo) Next() ([]MethodInfo, error) {
 	var mis []MethodInfo
 
 	for _, line := range lines {
-		info := findMethodInfo(line, nextLevel)
-		if info != nil {
-			mis = append(mis, *info)
+		info, found, err := findMethodInfo(line, nextLevel)
+		if err != nil {
+			return nil, err
 		}
+		if found {
+			mis = append(mis, info)
+		}
+	}
+
+	if len(mis) == 0 {
+		return nil, fmt.Errorf("%s cannot find next classes in the call heiraricy", m.class)
 	}
 
 	return mis, nil
 }
 
-func findMethodInfo(line string, level level) *MethodInfo {
-
+func findMethodInfo(line string, level level) (MethodInfo, bool, error) {
 	//fmt.Println("Level:", level, "Line:", line)
 
-	return nil
+	if strings.Contains(line, level.String()) {
+
+		p, err := regexp.Compile(`=(.*Bean.*?)\.(.*?)\((.*)\);`)
+		if err != nil {
+			return MethodInfo{}, false, err
+		}
+
+		found := p.FindAllStringSubmatch(line, -1)
+		if found != nil {
+
+			class := strings.TrimSpace(found[0][1])
+			class = strings.ToUpper(string(class[0])) + class[1:]
+			method := found[0][2]
+			argsNumber := strings.Count(found[0][3], ",")
+
+			return MethodInfo{
+				class:      class,
+				method:     method,
+				argsNumber: argsNumber,
+				level:      level,
+			}, true, nil
+		}
+	}
+
+	return MethodInfo{}, false, nil
 }
