@@ -215,7 +215,7 @@ func findMethodInfo(line string, level level) (MethodInfo, bool, error) {
 		if found != nil {
 
 			class := strings.TrimSpace(found[0][1])
-			class = strings.ToUpper(string(class[0])) + class[1:]
+			class = capitalize(class)
 			method := found[0][2]
 			argsNumber := strings.Count(found[0][3], ",")
 

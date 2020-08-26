@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
+	"strconv"
 )
 
 var srcDir string
@@ -14,9 +16,14 @@ func init() {
 
 func main() {
 
-	input := "getVehiclesDelegate().lookupLimitedVehiclePlateTypes(getUserInfo())"
+	class := os.Args[1]
+	method := os.Args[2]
+	argsNumber, err := strconv.Atoi(os.Args[3])
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	mi, err := parseInput(input)
+	mi, err := parseInput(class, method, argsNumber)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -41,17 +48,4 @@ func main() {
 
 		fmt.Println("\nStored Proc:> " + spName)
 	}
-}
-
-func parseInput(input string) (MethodInfo, error) {
-
-	// TODO implement
-
-	return MethodInfo{
-		class: "IstemaraDelegate",
-		//method:     "listTrafficViolationsDetails",
-		method:     "listActiveAssignedPlates",
-		level:      levelDelegate,
-		argsNumber: 3,
-	}, nil
 }
