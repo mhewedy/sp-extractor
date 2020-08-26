@@ -77,39 +77,6 @@ func (m MethodInfo) BodyAsLines() ([]string, error) {
 	return findBody(contents, methodIndex[1])
 }
 
-func (m MethodInfo) Next() ([]MethodInfo, error) {
-
-	lines, err := m.BodyAsLines()
-	if err != nil {
-		return nil, err
-	}
-
-	nextLevel, err := m.level.Next()
-	if err != nil {
-		return nil, err
-	}
-
-	var mis []MethodInfo
-
-	for _, line := range lines {
-		info := findMethodInfo(line, nextLevel)
-		if info != nil {
-			mis = append(mis, *info)
-		}
-	}
-
-	return mis, nil
-}
-
-// -----------
-
-func findMethodInfo(line string, level level) *MethodInfo {
-
-	//fmt.Println("Level:", level, "Line:", line)
-
-	return nil
-}
-
 func findClassPath(class string) (string, error) {
 	var classPath string
 	err := filepath.Walk(srcDir, func(path string, info os.FileInfo, err error) error {
@@ -199,4 +166,37 @@ func findBody(content string, startIndex int) ([]string, error) {
 		}
 	}
 	return strings.Split(body, newline), nil
+}
+
+// ---------
+
+func (m MethodInfo) Next() ([]MethodInfo, error) {
+
+	lines, err := m.BodyAsLines()
+	if err != nil {
+		return nil, err
+	}
+
+	nextLevel, err := m.level.Next()
+	if err != nil {
+		return nil, err
+	}
+
+	var mis []MethodInfo
+
+	for _, line := range lines {
+		info := findMethodInfo(line, nextLevel)
+		if info != nil {
+			mis = append(mis, *info)
+		}
+	}
+
+	return mis, nil
+}
+
+func findMethodInfo(line string, level level) *MethodInfo {
+
+	//fmt.Println("Level:", level, "Line:", line)
+
+	return nil
 }
