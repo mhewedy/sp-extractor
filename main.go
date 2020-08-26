@@ -74,11 +74,11 @@ func parseInput(input string) (MethodInfo, error) {
 	// TODO implement
 
 	return MethodInfo{
-		class: "VehiclesDelegate",
+		class: "IstemaraDelegate",
 		//method:     "listTrafficViolationsDetails",
-		method:     "lookupLimitedVehiclePlateTypes",
+		method:     "listActiveAssignedPlates",
 		level:      levelDelegate,
-		argsNumber: 1,
+		argsNumber: 3,
 	}, nil
 }
 
