@@ -200,7 +200,7 @@ func findMethodInfo(line string, level level) (MethodInfo, bool, error) {
 
 	if strings.Contains(line, level.String()) {
 
-		p, err := regexp.Compile(`=(.*Bean.*?)\.(.*?)\((.*)\);`)
+		p, err := regexp.Compile(fmt.Sprintf(`=(.*%s)[\.getInstance()]?.*?\.(.*?)\((.*)\);`, level.String()))
 		if err != nil {
 			return MethodInfo{}, false, err
 		}
