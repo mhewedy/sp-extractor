@@ -141,14 +141,13 @@ func readAndNormalizeContents(classPath string) (string, error) {
 	}
 	// split content on semicolon (instead of newline)
 	c := string(b)
-
 	c = strings.ReplaceAll(c, newline, " ")
 	c = strings.ReplaceAll(c, ";", ";"+newline)
 	return c, nil
 }
 
 func findMethodIndex(contents, method, class string, argsNumber int) ([]int, error) {
-	// find method index in the content
+
 	methodSigRegex := fmt.Sprintf("%s%s%s", `\s+`, method, `\s*\(`)
 	for i := 0; i < argsNumber; i++ {
 		methodSigRegex += ".*?," // ? for non greedy
