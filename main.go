@@ -32,7 +32,14 @@ func main() {
 			log.Printf("error in %v\n", mi)
 			continue
 		}
-		fmt.Println(getSpName(lines))
+
+		spName, err := getSpName(lines)
+		if err != nil {
+			log.Printf("error in %v\n", mi)
+			continue
+		}
+
+		fmt.Println("Stored Proc:> " + spName)
 	}
 }
 
