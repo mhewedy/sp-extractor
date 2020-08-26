@@ -22,21 +22,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	/*mis, err := mi.Next()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	mis, err = mis[0].Next()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	mis, err = mis[0].Next()
-	if err != nil {
-		log.Fatal(err)
-	}*/
-
 	mis, err := getDAOMethodInfo([]MethodInfo{mi})
 	if err != nil && err != errEndOfHierarchy {
 		log.Fatal(err)
