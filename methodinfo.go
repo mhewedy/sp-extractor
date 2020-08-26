@@ -136,11 +136,7 @@ func findMethodIndex(contents, method, class string, argsNumber int) ([]int, err
 			method, argsNumber, class)
 	}
 
-	fmt.Printf("Found: %s.", class)
-	for i := methodSigIndex[0]; i < methodSigIndex[1]; i++ {
-		fmt.Print(string(contents[i]))
-	}
-	fmt.Println()
+	fmt.Printf("Found: %s.%s with (%d) args\n", class, method, argsNumber)
 
 	return methodSigIndex, nil
 }
