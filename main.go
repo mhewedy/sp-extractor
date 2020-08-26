@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"strings"
 )
 
 var srcDir string
@@ -37,23 +36,6 @@ func main() {
 	}
 }
 
-func getDAOMethodInfo(mis []MethodInfo) ([]MethodInfo, error) {
-
-	for _, mi := range mis {
-
-		nextMis, err := mi.Next()
-		if err != nil {
-			if err == errEndOfHierarchy {
-				return []MethodInfo{mi}, err
-			}
-			return nil, err
-		}
-		return getDAOMethodInfo(nextMis)
-
-	}
-	return nil, nil
-}
-
 func parseInput(input string) (MethodInfo, error) {
 
 	// TODO implement
@@ -65,9 +47,4 @@ func parseInput(input string) (MethodInfo, error) {
 		level:      levelDelegate,
 		argsNumber: 3,
 	}, nil
-}
-
-func getSpName(lines []string) (string, error) {
-	fmt.Println("lines", strings.Join(lines, "\n"))
-	return "", nil
 }
