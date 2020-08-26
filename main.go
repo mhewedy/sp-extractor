@@ -39,7 +39,7 @@ func main() {
 			continue
 		}
 
-		fmt.Println("Stored Proc:> " + spName)
+		fmt.Println("\nStored Proc:> " + spName)
 	}
 }
 
