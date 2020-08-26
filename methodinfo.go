@@ -58,7 +58,10 @@ type MethodInfo struct {
 	lines      []string
 }
 
-func (m MethodInfo) BodyAsLines() ([]string, error) {
+func (m *MethodInfo) BodyAsLines() ([]string, error) {
+	if len(m.lines) > 0 {
+		return m.lines, nil
+	}
 
 	classPath, err := findClassPath(m.class)
 	if err != nil {
@@ -75,7 +78,9 @@ func (m MethodInfo) BodyAsLines() ([]string, error) {
 		return nil, err
 	}
 
-	return findBody(contents, methodIndex[1])
+	body, err := findBody(contents, methodIndex[1])
+	m.lines = body
+	return body, err
 }
 
 func findClassPath(class string) (string, error) {
@@ -165,7 +170,7 @@ func findBody(content string, startIndex int) ([]string, error) {
 
 // ---------
 
-func (m MethodInfo) Next() ([]MethodInfo, error) {
+func (m *MethodInfo) Next() ([]MethodInfo, error) {
 
 	lines, err := m.BodyAsLines()
 	if err != nil {
