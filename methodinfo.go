@@ -55,6 +55,7 @@ type MethodInfo struct {
 	method     string
 	level      level
 	argsNumber int
+	lines      []string
 }
 
 func (m MethodInfo) BodyAsLines() ([]string, error) {

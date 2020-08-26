@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"strings"
 )
 
 var srcDir string
@@ -21,7 +22,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	mis, err := mi.Next()
+	/*mis, err := mi.Next()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -31,36 +32,40 @@ func main() {
 		log.Fatal(err)
 	}
 
-	/*mis, err := getDAOMethodInfo(mi)
-	if err != errEndOfHierarchy {
+	mis, err = mis[0].Next()
+	if err != nil {
+		log.Fatal(err)
+	}*/
+
+	mis, err := getDAOMethodInfo([]MethodInfo{mi})
+	if err != nil && err != errEndOfHierarchy {
 		log.Fatal("EXIT", err)
 	}
 
 	for _, mi := range mis {
-		lines, err := mi.bodyAsLines()
+		lines, err := mi.BodyAsLines()
 		if err != nil {
 			log.Printf("error in %v\n", mi)
 			continue
 		}
 		fmt.Println(getSpName(lines))
-	}*/
+	}
 }
 
-func getDAOMethodInfo(mi MethodInfo) ([]MethodInfo, error) {
+func getDAOMethodInfo(mis []MethodInfo) ([]MethodInfo, error) {
 
-	arr, err := mi.Next()
-	if err != nil {
-		return nil, err
-	}
+	for _, mi := range mis {
 
-	for _, mi := range arr {
-		newArr, err := getDAOMethodInfo(mi)
+		nextMis, err := mi.Next()
 		if err != nil {
+			if err == errEndOfHierarchy {
+				return []MethodInfo{mi}, err
+			}
 			return nil, err
 		}
-		return newArr, nil
-	}
+		return getDAOMethodInfo(nextMis)
 
+	}
 	return nil, nil
 }
 
@@ -78,6 +83,6 @@ func parseInput(input string) (MethodInfo, error) {
 }
 
 func getSpName(lines []string) (string, error) {
-	fmt.Println("lines", lines)
+	fmt.Println("lines", strings.Join(lines, "\n"))
 	return "", nil
 }
