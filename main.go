@@ -39,7 +39,7 @@ func main() {
 
 	mis, err := getDAOMethodInfo([]MethodInfo{mi})
 	if err != nil && err != errEndOfHierarchy {
-		log.Fatal("EXIT", err)
+		log.Fatal(err)
 	}
 
 	for _, mi := range mis {
