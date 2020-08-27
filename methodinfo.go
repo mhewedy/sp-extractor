@@ -58,6 +58,77 @@ type MethodInfo struct {
 	lines      []string
 }
 
+// ----
+func (m *MethodInfo) Next() ([]MethodInfo, error) {
+
+	lines, err := m.BodyAsLines()
+	if err != nil {
+		return nil, err
+	}
+
+	nextLevel, err := m.level.Next()
+	if err != nil {
+		return nil, err
+	}
+
+	var mis []MethodInfo
+
+	for _, line := range lines {
+		info, found, err := findMethodInfo(line, nextLevel)
+		if err != nil {
+			return nil, err
+		}
+		if found {
+			mis = append(mis, info)
+		}
+	}
+
+	if len(mis) == 0 {
+		return nil, fmt.Errorf("%s cannot find next classes in the call heiraricy", m.class)
+	}
+
+	return mis, nil
+}
+
+func findMethodInfo(line string, level level) (MethodInfo, bool, error) {
+	//fmt.Println("Level:", level, "Line:", line)
+
+	if strings.Contains(line, level.String()) {
+
+		p, err := regexp.Compile(fmt.Sprintf(`(?:=|return)(.*%s)[\.getInstance()]?.*?\.(.*?)\((.*)\);`, level.String()))
+		if err != nil {
+			return MethodInfo{}, false, err
+		}
+
+		//fmt.Println(p)
+
+		found := p.FindAllStringSubmatch(line, -1)
+		if found != nil {
+
+			class := strings.TrimSpace(found[0][1])
+			class = capitalize(class)
+			method := strings.TrimSpace(found[0][2])
+			args := strings.TrimSpace(found[0][3])
+			argsNumber := 0
+			if len(args) > 0 {
+				argsNumber = 1
+			}
+			argsNumber += strings.Count(args, ",")
+
+			return MethodInfo{
+				class:      class,
+				method:     method,
+				argsNumber: argsNumber,
+				level:      level,
+			}, true, nil
+		}
+	}
+
+	return MethodInfo{}, false, nil
+}
+
+// ----
+
 func (m *MethodInfo) BodyAsLines() ([]string, error) {
 	if len(m.lines) > 0 {
 		return m.lines, nil
@@ -166,74 +237,4 @@ func findBody(content string, startIndex int) ([]string, error) {
 		}
 	}
 	return strings.Split(body, newline), nil
-}
-
-// ---------
-
-func (m *MethodInfo) Next() ([]MethodInfo, error) {
-
-	lines, err := m.BodyAsLines()
-	if err != nil {
-		return nil, err
-	}
-
-	nextLevel, err := m.level.Next()
-	if err != nil {
-		return nil, err
-	}
-
-	var mis []MethodInfo
-
-	for _, line := range lines {
-		info, found, err := findMethodInfo(line, nextLevel)
-		if err != nil {
-			return nil, err
-		}
-		if found {
-			mis = append(mis, info)
-		}
-	}
-
-	if len(mis) == 0 {
-		return nil, fmt.Errorf("%s cannot find next classes in the call heiraricy", m.class)
-	}
-
-	return mis, nil
-}
-
-func findMethodInfo(line string, level level) (MethodInfo, bool, error) {
-	//fmt.Println("Level:", level, "Line:", line)
-
-	if strings.Contains(line, level.String()) {
-
-		p, err := regexp.Compile(fmt.Sprintf(`(?:=|return)(.*%s)[\.getInstance()]?.*?\.(.*?)\((.*)\);`, level.String()))
-		if err != nil {
-			return MethodInfo{}, false, err
-		}
-
-		//fmt.Println(p)
-
-		found := p.FindAllStringSubmatch(line, -1)
-		if found != nil {
-
-			class := strings.TrimSpace(found[0][1])
-			class = capitalize(class)
-			method := strings.TrimSpace(found[0][2])
-			args := strings.TrimSpace(found[0][3])
-			argsNumber := 0
-			if len(args) > 0 {
-				argsNumber = 1
-			}
-			argsNumber += strings.Count(args, ",")
-
-			return MethodInfo{
-				class:      class,
-				method:     method,
-				argsNumber: argsNumber,
-				level:      level,
-			}, true, nil
-		}
-	}
-
-	return MethodInfo{}, false, nil
 }
