@@ -211,13 +211,20 @@ func findMethodInfo(line string, level level) (MethodInfo, bool, error) {
 			return MethodInfo{}, false, err
 		}
 
+		//fmt.Println(p)
+
 		found := p.FindAllStringSubmatch(line, -1)
 		if found != nil {
 
 			class := strings.TrimSpace(found[0][1])
 			class = capitalize(class)
-			method := found[0][2]
-			argsNumber := strings.Count(found[0][3], ",")
+			method := strings.TrimSpace(found[0][2])
+			args := strings.TrimSpace(found[0][3])
+			argsNumber := 0
+			if len(args) > 0 {
+				argsNumber = 1
+			}
+			argsNumber += strings.Count(args, ",")
 
 			return MethodInfo{
 				class:      class,
