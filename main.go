@@ -2,17 +2,29 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 )
 
 var srcDir string
 
 func init() {
-	srcDir = "C:\\Users\\mhewedy\\workspace\\code\\tamm\\Tamm-Portal"
-	//srcDir = "/Users/mhewedy/Downloads/Tamm-Portal"
+	homeDir, _ := os.UserHomeDir()
+	f, err := os.Open(filepath.Join(homeDir, ".sp-extractor"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer f.Close()
+	b, err := ioutil.ReadAll(f)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	srcDir = strings.TrimSpace(string(b))
 }
 
 func main() {
