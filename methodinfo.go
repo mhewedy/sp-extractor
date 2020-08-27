@@ -27,9 +27,11 @@ const (
 	levelDAOSuffix      = "DAO"
 )
 
+const local = "Local"
+
 type level uint8
 
-func (c level) Next() (level, error) {
+func (c level) next() (level, error) {
 	if c == levelDAO {
 		return 0, errEndOfHierarchy
 	}
@@ -48,9 +50,22 @@ func (c level) String() string {
 	return ""
 }
 
+func (c level) searchKeywords() []string {
+	switch c {
+	case levelDelegate:
+		return []string{levelDelegateSuffix}
+	case levelBean:
+		return []string{levelBeanSuffix, local}
+	case levelDAO:
+		return []string{levelDAOSuffix}
+	}
+	return nil
+}
+
 // -----------
 
 type MethodInfo struct {
+	module     string
 	class      string
 	method     string
 	level      level
@@ -66,7 +81,7 @@ func (m *MethodInfo) Next() ([]MethodInfo, error) {
 		return nil, err
 	}
 
-	nextLevel, err := m.level.Next()
+	nextLevel, err := m.level.next()
 	if err != nil {
 		return nil, err
 	}
@@ -74,7 +89,7 @@ func (m *MethodInfo) Next() ([]MethodInfo, error) {
 	var mis []MethodInfo
 
 	for _, line := range lines {
-		info, found, err := findMethodInfo(line, nextLevel)
+		info, found, err := m.findMethodInfo(line, nextLevel)
 		if err != nil {
 			return nil, err
 		}
@@ -90,37 +105,41 @@ func (m *MethodInfo) Next() ([]MethodInfo, error) {
 	return mis, nil
 }
 
-func findMethodInfo(line string, level level) (MethodInfo, bool, error) {
-	//fmt.Println("Level:", level, "Line:", line)
+func (m *MethodInfo) findMethodInfo(line string, nextLevel level) (MethodInfo, bool, error) {
+	//fmt.Println("Level:", nextLevel, "Line:", line)
 
-	if strings.Contains(line, level.String()) {
+	for _, keyword := range nextLevel.searchKeywords() {
 
-		p, err := regexp.Compile(fmt.Sprintf(`(?:=|return)(.*%s)[\.getInstance()]?.*?\.(.*?)\((.*)\);`, level.String()))
-		if err != nil {
-			return MethodInfo{}, false, err
-		}
+		if strings.Contains(line, keyword) {
 
-		//fmt.Println(p)
-
-		found := p.FindAllStringSubmatch(line, -1)
-		if found != nil {
-
-			class := strings.TrimSpace(found[0][1])
-			class = capitalize(class)
-			method := strings.TrimSpace(found[0][2])
-			args := strings.TrimSpace(found[0][3])
-			argsNumber := 0
-			if len(args) > 0 {
-				argsNumber = 1
+			p, err := regexp.Compile(fmt.Sprintf(`(?:=|return)(.*%s)[\.getInstance()]?.*?\.(.*?)\((.*)\);`, keyword))
+			if err != nil {
+				return MethodInfo{}, false, err
 			}
-			argsNumber += strings.Count(args, ",")
 
-			return MethodInfo{
-				class:      class,
-				method:     method,
-				argsNumber: argsNumber,
-				level:      level,
-			}, true, nil
+			//fmt.Println("pattern", p)
+
+			found := p.FindAllStringSubmatch(line, -1)
+			if found != nil {
+
+				class := strings.TrimSpace(found[0][1])
+				class = capitalize(class)
+				method := strings.TrimSpace(found[0][2])
+				args := strings.TrimSpace(found[0][3])
+				argsNumber := 0
+				if len(args) > 0 {
+					argsNumber = 1
+				}
+				argsNumber += strings.Count(args, ",")
+
+				return MethodInfo{
+					module:     m.module,
+					class:      m.module + nextLevel.String(),
+					method:     method,
+					argsNumber: argsNumber,
+					level:      nextLevel,
+				}, true, nil
+			}
 		}
 	}
 
