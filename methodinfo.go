@@ -188,7 +188,8 @@ func findClassPath(class string) (string, error) {
 		return "", err
 	}
 	if classPath == "" {
-		return "", fmt.Errorf("cannot find file for class: %s", class)
+		return "", fmt.Errorf("cannot find file for class: %s"+
+			"\nTry to add a mapping for <Delegate>:<Bean>:<DAO> in %s", class, mappingFilePath)
 	}
 	return classPath, nil
 }

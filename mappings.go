@@ -12,6 +12,11 @@ type typeMapping []string
 
 var typeMappings typeMapping
 
+var (
+	__homeDir, _    = os.UserHomeDir()
+	mappingFilePath = filepath.Join(__homeDir, ".sp-extractor.map")
+)
+
 func (tm typeMapping) findNext(class string) (string, bool) {
 
 	for _, line := range typeMappings {
@@ -31,8 +36,8 @@ func (tm typeMapping) findNext(class string) (string, bool) {
 }
 
 func initTypeMappings() {
-	homeDir, _ := os.UserHomeDir()
-	f, err := os.OpenFile(filepath.Join(homeDir, ".sp-extractor.map"), os.O_CREATE|os.O_RDONLY, 0600)
+
+	f, err := os.OpenFile(mappingFilePath, os.O_CREATE|os.O_RDONLY, 0600)
 	if err != nil {
 		log.Fatal(err)
 	}
