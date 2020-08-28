@@ -122,8 +122,10 @@ func (m *MethodInfo) findMethodInfo(line string, nextLevel level) (MethodInfo, b
 			found := p.FindAllStringSubmatch(line, -1)
 			if found != nil {
 
-				class := strings.TrimSpace(found[0][1])
-				class = capitalize(class)
+				class, ok := typeMappings.findNext(m.class)
+				if !ok {
+					class = m.module + nextLevel.String()
+				}
 				method := strings.TrimSpace(found[0][2])
 				args := strings.TrimSpace(found[0][3])
 				argsNumber := 0
@@ -134,7 +136,7 @@ func (m *MethodInfo) findMethodInfo(line string, nextLevel level) (MethodInfo, b
 
 				return MethodInfo{
 					module:     m.module,
-					class:      m.module + nextLevel.String(),
+					class:      class,
 					method:     method,
 					argsNumber: argsNumber,
 					level:      nextLevel,
@@ -175,7 +177,7 @@ func (m *MethodInfo) BodyAsLines() ([]string, error) {
 
 func findClassPath(class string) (string, error) {
 	var classPath string
-	err := filepath.Walk(srcDir, func(path string, info os.FileInfo, err error) error {
+	err := filepath.Walk(srcDirConfig, func(path string, info os.FileInfo, err error) error {
 		if strings.HasSuffix(path, fmt.Sprintf("%s%s%s", string(filepath.Separator), class, ".java")) {
 			classPath = path
 			return io.EOF
