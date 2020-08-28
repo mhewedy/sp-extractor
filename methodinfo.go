@@ -242,8 +242,9 @@ func findMethodIndex(contents, method, class string, argsNumber int) ([]int, err
 	methodSigIndex := p.FindStringIndex(contents)
 
 	if len(methodSigIndex) == 0 {
-		return nil, fmt.Errorf("cannot find method: %s with number of args %d in class %s",
-			method, argsNumber, class)
+		return nil, fmt.Errorf("cannot find method: %s with number of args %d in class %s"+
+			"\nTry to add a mapping for <Delegate>:<Bean>:<DAO> in %s",
+			method, argsNumber, class, mappingFilePath)
 	}
 
 	fmt.Printf("Found: %s.%s with (%d) args\n", class, method, argsNumber)
