@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"github.com/fatih/color"
 	"io"
 	"io/ioutil"
 	"os"
@@ -79,6 +80,16 @@ func (m *MethodInfo) Next() ([]MethodInfo, error) {
 	lines, err := m.BodyAsLines()
 	if err != nil {
 		return nil, err
+	}
+
+	if m.level == levelBean && len(lines) > 2 {
+		//for _, line := range lines {
+		//	fmt.Println(line)
+		//}
+		fmt.Println(color.CyanString("It appears ") +
+			color.New(color.Bold, color.FgCyan).Sprintf("%s.%s", m.class, m.method) +
+			color.CyanString(" contains business logic, you might need to check it."),
+		)
 	}
 
 	nextLevel, err := m.level.next()

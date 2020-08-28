@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/fatih/color"
 	"log"
 	"os"
 	"path/filepath"
@@ -34,22 +35,22 @@ func main() {
 
 	mis, err := getDAOMethodInfo([]MethodInfo{mi})
 	if err != nil && err != errEndOfHierarchy {
-		log.Fatal(err)
+		log.Fatal(color.RedString(err.Error()))
 	}
 
 	for _, mi := range mis {
 		lines, err := mi.BodyAsLines()
 		if err != nil {
-			fmt.Println("\nStored Proc Body:> ", lines)
+			fmt.Println(color.GreenString("\nStored Proc Body:> %s", lines))
 			continue
 		}
 
 		spName, err := getSpName(lines)
 		if err != nil {
-			fmt.Println("\nStored Proc Body:> ", lines)
+			fmt.Println(color.GreenString("\nStored Proc Body:> %s", lines))
 			continue
 		}
 
-		fmt.Println("\n[Found] Stored Proc Name:> " + spName)
+		fmt.Println(color.HiGreenString("\n[Found] Stored Proc Name:> %s", spName))
 	}
 }
