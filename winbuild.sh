@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-go build -o bin/sp-extractor.exe
+GOOS=windows go build -o bin/sp-extractor.exe
