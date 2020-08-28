@@ -86,8 +86,8 @@ func (m *MethodInfo) Next() ([]MethodInfo, error) {
 		//for _, line := range lines {
 		//	fmt.Println(line)
 		//}
-		fmt.Println(color.CyanString("It appears ") +
-			color.New(color.Bold, color.FgCyan).Sprintf("%s.%s", m.class, m.method) +
+		_, _ = fmt.Fprintln(color.Output, color.CyanString("It appears ")+
+			color.New(color.Bold, color.FgCyan).Sprintf("%s.%s", m.class, m.method)+
 			color.CyanString(" contains business logic, you might need to check it."),
 		)
 	}

@@ -35,22 +35,22 @@ func main() {
 
 	mis, err := getDAOMethodInfo([]MethodInfo{mi})
 	if err != nil && err != errEndOfHierarchy {
-		log.Fatal(color.RedString(err.Error()))
+		_, _ = fmt.Fprintln(color.Output, color.RedString(err.Error()))
 	}
 
 	for _, mi := range mis {
 		lines, err := mi.BodyAsLines()
 		if err != nil {
-			fmt.Println(color.GreenString("\nStored Proc Body:> %s", lines))
+			_, _ = fmt.Fprintln(color.Output, color.GreenString("\nStored Proc Body:> %s", lines))
 			continue
 		}
 
 		spName, err := getSpName(lines)
 		if err != nil {
-			fmt.Println(color.GreenString("\nStored Proc Body:> %s", lines))
+			_, _ = fmt.Fprintln(color.Output, color.GreenString("\nStored Proc Body:> %s", lines))
 			continue
 		}
 
-		fmt.Println(color.HiGreenString("\n[Found] Stored Proc Name:> %s", spName))
+		_, _ = fmt.Fprintln(color.Output, color.HiGreenString("\n[Found] Stored Proc Name:> %s", spName))
 	}
 }
