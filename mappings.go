@@ -8,6 +8,8 @@ import (
 	"strings"
 )
 
+const mappingsCommentPrefix = "#"
+
 type typeMapping []string
 
 var typeMappings typeMapping
@@ -20,7 +22,8 @@ var (
 func (tm typeMapping) findNext(class string) (string, bool) {
 
 	for _, line := range typeMappings {
-		if strings.Contains(line, class) {
+		line = strings.TrimSpace(line)
+		if !strings.HasPrefix(line, mappingsCommentPrefix) && strings.Contains(line, class) {
 
 			part := strings.Split(line, ":")
 
